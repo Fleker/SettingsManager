@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.felkertech.settingsmanager.SettingsManager;
+import com.felkertech.settingsmanager.SyncableSettingsManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -34,56 +35,15 @@ import java.util.Set;
  * Last Edited 13/5/2015
  *   * Support for syncing data to wearables
  */
-public class WearSettingsManager extends SettingsManager {
+public class WearSettingsManager extends SyncableSettingsManager {
     public WearSettingsManager(Activity activity) {
         super(activity);
     }
     public WearSettingsManager(Context context) {
         super(context);
     }
-    public String setString(int resId, String val) {
-        String out = super.setString(resId, val);
-        pushData();
-        return out;
-    }
-    public String setString(String key, String val) {
-        String out = super.setString(key, val);
-        pushData();
-        return out;
-    }
-    public boolean setBoolean(int resId, boolean val) {
-        boolean out = super.setBoolean(mContext.getString(resId), val);
-        pushData();
-        return out;
-    }
-    public boolean setBoolean(String key, boolean val) {
-        boolean out = super.setBoolean(key, val);
-        pushData();
-        return out;
-    }
-    public int setInt(int resId, int val) {
-        int out = super.setInt(mContext.getString(resId), val);
-        pushData();
-        return out;
-    }
-    public int setInt(String key, int val) {
-        int out = super.setInt(key, val);
-        pushData();
-        return out;
-    }
-    public long setLong(int resId, long val) {
-        long out = super.setLong(mContext.getString(resId), val);
-        pushData();
-        return out;
-    }
-    public long setLong(String key, long val) {
-        long out = super.setLong(key, val);
-        pushData();
-        return out;
-    }
 
     /* SYNCABLE SETTINGS MANAGER */
-    private boolean syncEnabled = false;
     private GoogleApiClient syncClient;
 
     public boolean setSyncableSettingsManager(GoogleApiClient gapi) {
@@ -92,7 +52,7 @@ public class WearSettingsManager extends SettingsManager {
             ConnectionResult wearable = gapi.getConnectionResult(Wearable.API);
             if (wearable.isSuccess()) {
                 //Sync enabled
-                syncEnabled = true;
+                enableSync();
                 return true;
             } else {
                 Log.e(TAG, "Wear API is disabled");
@@ -141,7 +101,6 @@ public class WearSettingsManager extends SettingsManager {
      * @param dataEvents DataEventBuffer from the service callback
      */
     public void pullData(DataEventBuffer dataEvents) {
-//        Iterator<DataEvent> eventIterator = dataEvents.iterator();
         for (DataEvent event : dataEvents) {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 Log.d(TAG, "DataItem changed: " + event.getDataItem().getUri());

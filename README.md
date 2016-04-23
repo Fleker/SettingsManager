@@ -7,7 +7,7 @@ integrate that with Android Wear through automatic syncing, Google Drive, and Go
 ## Gradle
 You can get the vanilla SettingsManager through Gradle:
 
-    compile 'com.github.fleker:settingsmanager:1.2.2'
+    compile 'com.github.fleker:settingsmanager:1.3.1'
 
 ## SettingsManager
 
@@ -39,16 +39,16 @@ You should read the documentation on cloud saves to learn more about their imple
 and read data. 
 
 ### Android Wear
-To use Android Wear, use the `WearSettingsManager` class by including the following library **on your phone**:
+To sync your phone with Android Wear, use the `WearSettingsManager` class by including the following library **on your phone**:
 
-    compile 'com.github.fleker:settingsmanager-wear:1.2.2'
+    compile 'com.github.fleker:settingsmanager-wear:1.3.1'
     
-Your watch will require a slightly separate version of the library.
+Your watch will require a slightly separate version of the library. You can use the `WatchSettingsManager` to sync data back to the phone.
 
-    compile 'com.github.fleker:settingsmanager-wearable:1.2.2'
+    compile 'com.github.fleker:settingsmanager-wearable:1.3.1'
 
-The `WearSettingsManager` is an extension of the `SettingsManager` that, when a value is changed, syncs all of the data. This works
-both ways, if data is changed on the phone or on the watch. By including the library, the necessary listeners will be added to the project on each device.
+Both classes are extensions of the `SyncableSettingsManager` class that, when a value is changed, syncs all of the data. This works
+both ways, if data is changed on the phone or on the watch. By including the library, the necessary listeners will be added to the project on each device. You can extend this class to implement your own data syncing functionality.
 
 You can manually reset data to another device by calling:
 
