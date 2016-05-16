@@ -96,22 +96,20 @@ public class WatchSettingsManager extends SyncableSettingsManager {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 Log.d(TAG, "DataItem changed: " + event.getDataItem().getUri());
                 DataMap dataMap = DataMap.fromByteArray(event.getDataItem().getData());
-                Iterator<String> stringIterator = dataMap.keySet().iterator();
-                while(stringIterator.hasNext()) {
-                    String key = stringIterator.next();
+                for (String key : dataMap.keySet()) {
                     Object v = dataMap.get(key);
-                    if(v.getClass().toString().contains("Boolean")) {
-                        setBoolean(key, (Boolean) v);
-                        Log.d(TAG, "Retrieved boolean "+key+" => "+v);
-                    } else if(v.getClass().toString().contains("String")) {
-                        setString(key, (String) v);
-                        Log.d(TAG, "Retrieved string " + key+" => "+v);
+                    if (v.getClass().toString().contains("Boolean")) {
+                        setLocalBoolean(key, (Boolean) v);
+                        Log.d(TAG, "Retrieved boolean " + key + " => " + v);
+                    } else if (v.getClass().toString().contains("String")) {
+                        setLocalString(key, (String) v);
+                        Log.d(TAG, "Retrieved string " + key + " => " + v);
                     } else if (v.getClass().toString().contains("Integer")) {
-                        setInt(key, (int) v);
-                        Log.d(TAG, "Retrieved int " + key+" => "+v);
+                        setLocalInt(key, (int) v);
+                        Log.d(TAG, "Retrieved int " + key + " => " + v);
                     } else if (v.getClass().toString().contains("Long")) {
-                        setLong(key, (long) v);
-                        Log.d(TAG, "Retrieved long " + key+" => "+v);
+                        setLocalLong(key, (long) v);
+                        Log.d(TAG, "Retrieved long " + key + " => " + v);
                     }
                 }
             }
