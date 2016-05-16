@@ -9,7 +9,7 @@ import com.google.android.gms.wearable.WearableListenerService;
 public class MessageListener extends WearableListenerService {
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        SettingsManager sm = new SettingsManager(getApplicationContext());
+        WatchSettingsManager sm = new WatchSettingsManager(getApplicationContext());
         sm.pullData(dataEvents);
     }
 }

@@ -1,8 +1,4 @@
-package com.felkertech.wearsettingsmanager;
-
-/**
- * Created by guest1 on 1/2/2016.
- */
+package com.felkertech.settingsmanager.wear;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,7 +6,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.felkertech.settingsmanager.SettingsManager;
 import com.felkertech.settingsmanager.SyncableSettingsManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -23,23 +18,21 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Iterator;
-import java.util.Set;
 
 /**
- * Version 1.1
+ * Version 1.2
  * Created by N on 14/9/2014.
- * Last Edited 13/5/2015
+ * Edited 18/5/2015
+ *   * Support for individual items being pushed and pulled
+ * Edited 13/5/2015
  *   * Support for syncing data to wearables
  */
-public class WearSettingsManager extends SyncableSettingsManager {
-    public WearSettingsManager(Activity activity) {
+public class WatchSettingsManager extends SyncableSettingsManager {
+    public WatchSettingsManager(Activity activity) {
         super(activity);
     }
-    public WearSettingsManager(Context context) {
+    public WatchSettingsManager(Context context) {
         super(context);
     }
 
@@ -48,15 +41,16 @@ public class WearSettingsManager extends SyncableSettingsManager {
 
     public boolean setSyncableSettingsManager(GoogleApiClient gapi) {
         syncClient = gapi;
-        if(gapi != null && gapi.isConnected()) {
+        if(gapi.isConnected()) {
+            Log.d(TAG, "Connected");
             ConnectionResult wearable = gapi.getConnectionResult(Wearable.API);
-            if (wearable.isSuccess()) {
+            if(wearable.isSuccess()) {
                 //Sync enabled
                 enableSync();
                 return true;
-            } else {
-                Log.e(TAG, "Wear API is disabled");
             }
+        } else {
+            Log.d(TAG, "Not connected");
         }
         return false;
     }
@@ -65,33 +59,29 @@ public class WearSettingsManager extends SyncableSettingsManager {
      * Pushes all settings to other devices
      */
     public void pushData() {
-        if(syncClient == null || !syncClient.isConnected()) {
-            Log.e(TAG, "Can't sync");
-            throw new NullPointerException("GoogleApiClient is null or not connected");
+        if(syncClient == null) {
+            Log.e(TAG, "SyncClient isn't ready yet!");
+            return;
         }
+        Log.d(TAG, "Starting to push stuff");
         Iterator<String> keys = sharedPreferences.getAll().keySet().iterator();
         PutDataMapRequest dataMap = PutDataMapRequest.create("/prefs");
         while(keys.hasNext()) {
             String key = keys.next();
             Object v = sharedPreferences.getAll().get(key);
-            Log.d(TAG, "Push "+key+" = "+v.getClass().getSimpleName()+", "+v);
+            Log.d(TAG, key + " " + v.getClass().toString());
             if(v.getClass().toString().contains("Boolean")) {
                 dataMap.getDataMap().putBoolean(key, (Boolean) v);
-                //Log.d(TAG, "Sending boolean "+key+" = "+v);
             } else if(v.getClass().toString().contains("String")) {
                 dataMap.getDataMap().putString(key, (String) v);
-                //Log.d(TAG, "Sending string "+key+" = "+v);
             } else if (v.getClass().toString().contains("Integer")) {
                 dataMap.getDataMap().putInt(key, (int) v);
-                //Log.d(TAG, "Sending int "+key+" = "+v);
             } else if (v.getClass().toString().contains("Long")) {
                 dataMap.getDataMap().putLong(key, (long) v);
-                // Log.d(TAG, "Sending long "+key+" = "+v);
             }
         }
         PutDataRequest request = dataMap.asPutDataRequest();
-        dataMap.setUrgent();
-        //Log.d(TAG, "Pending intent");
+        request.setUrgent();
         PendingResult<DataApi.DataItemResult> pendingResult =
                 Wearable.DataApi.putDataItem(syncClient, request);
     }
@@ -101,6 +91,7 @@ public class WearSettingsManager extends SyncableSettingsManager {
      * @param dataEvents DataEventBuffer from the service callback
      */
     public void pullData(DataEventBuffer dataEvents) {
+        Iterator<DataEvent> eventIterator = dataEvents.iterator();
         for (DataEvent event : dataEvents) {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 Log.d(TAG, "DataItem changed: " + event.getDataItem().getUri());
@@ -109,16 +100,19 @@ public class WearSettingsManager extends SyncableSettingsManager {
                     Object v = dataMap.get(key);
                     if (v.getClass().toString().contains("Boolean")) {
                         setLocalBoolean(key, (Boolean) v);
+                        Log.d(TAG, "Retrieved boolean " + key + " => " + v);
                     } else if (v.getClass().toString().contains("String")) {
                         setLocalString(key, (String) v);
+                        Log.d(TAG, "Retrieved string " + key + " => " + v);
                     } else if (v.getClass().toString().contains("Integer")) {
                         setLocalInt(key, (int) v);
+                        Log.d(TAG, "Retrieved int " + key + " => " + v);
                     } else if (v.getClass().toString().contains("Long")) {
                         setLocalLong(key, (long) v);
+                        Log.d(TAG, "Retrieved long " + key + " => " + v);
                     }
                 }
             }
         }
     }
 }
-
