@@ -105,18 +105,16 @@ public class WearSettingsManager extends SyncableSettingsManager {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 Log.d(TAG, "DataItem changed: " + event.getDataItem().getUri());
                 DataMap dataMap = DataMap.fromByteArray(event.getDataItem().getData());
-                Iterator<String> stringIterator = dataMap.keySet().iterator();
-                while(stringIterator.hasNext()) {
-                    String key = stringIterator.next();
+                for (String key : dataMap.keySet()) {
                     Object v = dataMap.get(key);
-                    if(v.getClass().toString().contains("Boolean")) {
-                        setBoolean(key, (Boolean) v);
-                    } else if(v.getClass().toString().contains("String")) {
-                        setString(key, (String) v);
+                    if (v.getClass().toString().contains("Boolean")) {
+                        setLocalBoolean(key, (Boolean) v);
+                    } else if (v.getClass().toString().contains("String")) {
+                        setLocalString(key, (String) v);
                     } else if (v.getClass().toString().contains("Integer")) {
-                        setInt(key, (int) v);
+                        setLocalInt(key, (int) v);
                     } else if (v.getClass().toString().contains("Long")) {
-                        setLong(key, (long) v);
+                        setLocalLong(key, (long) v);
                     }
                 }
             }

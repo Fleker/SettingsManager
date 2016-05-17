@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Created by N on 5/31/2015.
+ * Created by Nick on 5/31/2015.
  */
 public class CommaArray {
 

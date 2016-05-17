@@ -32,6 +32,9 @@ public abstract class SyncableSettingsManager extends SettingsManager {
         return syncEnabled;
     }
 
+    public String setLocalString(String key, String val) {
+        return super.setString(key, val);
+    }
     public String setString(int resId, String val) {
         String out = super.setString(resId, val);
         pushData();
@@ -41,6 +44,9 @@ public abstract class SyncableSettingsManager extends SettingsManager {
         String out = super.setString(key, val);
         pushData();
         return out;
+    }
+    public boolean setLocalBoolean(String key, Boolean val) {
+        return super.setBoolean(key, val);
     }
     public boolean setBoolean(int resId, boolean val) {
         boolean out = super.setBoolean(mContext.getString(resId), val);
@@ -52,6 +58,9 @@ public abstract class SyncableSettingsManager extends SettingsManager {
         pushData();
         return out;
     }
+    public int setLocalInt(String key, int val) {
+        return super.setInt(key, val);
+    }
     public int setInt(int resId, int val) {
         int out = super.setInt(mContext.getString(resId), val);
         pushData();
@@ -61,6 +70,9 @@ public abstract class SyncableSettingsManager extends SettingsManager {
         int out = super.setInt(key, val);
         pushData();
         return out;
+    }
+    public long setLocalLong(String key, long val) {
+        return super.setLong(key, val);
     }
     public long setLong(int resId, long val) {
         long out = super.setLong(mContext.getString(resId), val);
